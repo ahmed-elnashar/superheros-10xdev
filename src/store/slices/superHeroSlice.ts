@@ -31,7 +31,8 @@ const initialState: SuperheroState = {
     error: null,
     filters: {
         sortBy: 'name',
-        sortOrder: 'asc'
+        sortOrder: 'asc',
+        showFavoritesOnly: false
     },
     pagination: {
         currentPage: 1,
@@ -60,8 +61,10 @@ export const fetchPublishers = createAsyncThunk(
 
 export const fetchFilteredHeroes = createAsyncThunk(
     'superhero/fetchFilteredHeroes',
-    async (filters: FilterOptions) => {
-        const heroes = await superheroService.getFilteredHeroes(filters)
+    async (_, {getState}) => {
+        const state = getState() as { superhero: SuperheroState }
+        const {filters, favoriteIds} = state.superhero
+        const heroes = await superheroService.getFilteredHeroes(filters, favoriteIds)
         return heroes
     }
 )
@@ -101,10 +104,15 @@ const superheroSlice = createSlice({
                 state.favoriteIds = state.favoriteIds.filter(id => id !== heroId)
             }
         },
+        toggleFavoritesFilter: (state) => {
+            state.filters.showFavoritesOnly = !state.filters.showFavoritesOnly
+            state.pagination.currentPage = 1 // Reset to first page
+        },
         clearFilters: (state) => {
             state.filters = {
                 sortBy: 'name',
-                sortOrder: 'asc'
+                sortOrder: 'asc',
+                showFavoritesOnly: false
             }
         },
         clearError: (state) => {
@@ -165,6 +173,7 @@ export const {
     setCurrentPage,
     setPageSize,
     toggleFavorite,
+    toggleFavoritesFilter,
     clearFilters,
     clearError
 } = superheroSlice.actions

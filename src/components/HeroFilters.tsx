@@ -1,34 +1,63 @@
 import React from 'react'
-import {Box, Chip, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography,} from '@mui/material'
+import {
+    Box,
+    Chip,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    TextField,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
+} from '@mui/material'
+import {Favorite} from '@mui/icons-material'
 import {useAppDispatch, useAppSelector} from '../store'
-import {fetchFilteredHeroes, setFilters} from '../store/slices/superHeroSlice'
+import {fetchFilteredHeroes, setFilters, toggleFavoritesFilter} from '../store/slices/superHeroSlice'
 import type {SortKey, SortOrder} from '../services/superhero.service'
 
 const HeroFilters: React.FC = () => {
     const dispatch = useAppDispatch()
-    const {filters, publishers} = useAppSelector((state) => state.superhero)
+    const {filters, publishers, favoriteIds} = useAppSelector((state) => state.superhero)
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const search = event.target.value
         const newFilters = {...filters, search}
         dispatch(setFilters(newFilters))
-        dispatch(fetchFilteredHeroes(newFilters))
+        dispatch(fetchFilteredHeroes())
     }
 
     const handlePublisherChange = (publisher: string) => {
         const newFilters = {...filters, publisher: publisher || undefined}
         dispatch(setFilters(newFilters))
-        dispatch(fetchFilteredHeroes(newFilters))
+        dispatch(fetchFilteredHeroes())
     }
 
     const handleSortChange = (sortBy: SortKey, sortOrder: SortOrder) => {
         const newFilters = {...filters, sortBy, sortOrder}
         dispatch(setFilters(newFilters))
-        dispatch(fetchFilteredHeroes(newFilters))
+        dispatch(fetchFilteredHeroes())
+    }
+
+    const handleFavoritesToggle = () => {
+        dispatch(toggleFavoritesFilter())
+        dispatch(fetchFilteredHeroes())
     }
 
     const handleClearPublisher = () => {
         handlePublisherChange('')
+    }
+
+    const handleClearSearch = () => {
+        handleSearchChange({target: {value: ''}} as any)
+    }
+
+    const handleClearFavoritesFilter = () => {
+        if (filters.showFavoritesOnly) {
+            dispatch(toggleFavoritesFilter())
+            dispatch(fetchFilteredHeroes())
+        }
     }
 
     const sortOptions = [
@@ -56,7 +85,7 @@ const HeroFilters: React.FC = () => {
                     placeholder="Search by name or full name"
                 />
 
-                <Stack direction={{xs: 'column', sm: 'row'}} spacing={2}>
+                <Stack direction={{xs: 'column', sm: 'row'}} spacing={2} alignItems="center">
                     <FormControl sx={{minWidth: 200}}>
                         <InputLabel>Publisher</InputLabel>
                         <Select
@@ -99,6 +128,18 @@ const HeroFilters: React.FC = () => {
                             <MenuItem value="desc">Descending</MenuItem>
                         </Select>
                     </FormControl>
+
+                    <ToggleButtonGroup
+                        value={filters.showFavoritesOnly ? 'favorites' : 'all'}
+                        exclusive
+                        onChange={handleFavoritesToggle}
+                        aria-label="filter heroes"
+                    >
+                        <ToggleButton value="favorites" aria-label="show favorites only">
+                            <Favorite sx={{mr: 1}}/>
+                            Favorites ({favoriteIds.length})
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                 </Stack>
 
                 {/* Active filters */}
@@ -114,8 +155,16 @@ const HeroFilters: React.FC = () => {
                     {filters.search && (
                         <Chip
                             label={`Search: ${filters.search}`}
-                            onDelete={() => handleSearchChange({target: {value: ''}} as any)}
+                            onDelete={handleClearSearch}
                             color="primary"
+                            variant="outlined"
+                        />
+                    )}
+                    {filters.showFavoritesOnly && (
+                        <Chip
+                            label="Favorites Only"
+                            onDelete={handleClearFavoritesFilter}
+                            color="error"
                             variant="outlined"
                         />
                     )}

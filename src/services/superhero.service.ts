@@ -67,6 +67,7 @@ export interface FilterOptions {
     sortBy?: SortKey
     sortOrder?: SortOrder
     search?: string
+    showFavoritesOnly?: boolean
 }
 
 class SuperheroService {
@@ -117,9 +118,14 @@ class SuperheroService {
         }
     }
 
-    async getFilteredHeroes(options: FilterOptions = {}): Promise<Superhero[]> {
+    async getFilteredHeroes(options: FilterOptions = {}, favoriteIds: number[] = []): Promise<Superhero[]> {
         try {
             let heroes = await this.getAllHeroes()
+
+            // Filter by favorites only
+            if (options.showFavoritesOnly) {
+                heroes = heroes.filter(hero => favoriteIds.includes(hero.id))
+            }
 
             // Filter by publisher
             if (options.publisher) {
