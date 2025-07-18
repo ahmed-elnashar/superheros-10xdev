@@ -1,49 +1,36 @@
+import type {ReactElement} from 'react'
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { Provider } from 'react-redux'
-import { ThemeProvider } from '@mui/material/styles'
-import { CssBaseline } from '@mui/material'
-import { configureStore } from '@reduxjs/toolkit'
-import uiReducer from '../store/slices/uiSlice'
-import { lightTheme } from '../styles/theme'
+import type {RenderOptions} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {Provider} from 'react-redux'
+import {ThemeProvider} from '@mui/material/styles'
+import {CssBaseline} from '@mui/material'
+import {lightTheme} from '../styles/theme'
 
-import type { ReactElement } from 'react'
-import type { RenderOptions } from '@testing-library/react'
-import type { RootState } from '../store'
+// Import the actual store
+import {store} from '../store'
 
-const createTestStore = (preloadedState?: Partial<RootState>) => {
-    return configureStore({
-        reducer: {
-            ui: uiReducer,
-        },
-        preloadedState,
-    })
-}
-
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-    preloadedState?: Partial<RootState>
-}
+type CustomRenderOptions = Omit<RenderOptions, 'wrapper'>
 
 export const renderWithProviders = (
     ui: ReactElement,
     options: CustomRenderOptions = {}
 ) => {
-    const { preloadedState, ...renderOptions } = options
-    const store = createTestStore(preloadedState)
+    const {...renderOptions} = options
 
-    const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+    const AllTheProviders = ({children}: { children: React.ReactNode }) => {
         return (
             <Provider store={store}>
                 <ThemeProvider theme={lightTheme}>
-                    <CssBaseline />
+                    <CssBaseline/>
                     {children}
                 </ThemeProvider>
             </Provider>
         )
     }
 
-    return render(ui, { wrapper: AllTheProviders, ...renderOptions })
+    return {store, ...render(ui, {wrapper: AllTheProviders, ...renderOptions})}
 }
 
 // Re-export everything from testing-library
-export { screen, fireEvent, waitFor }
+export {screen, fireEvent, waitFor}

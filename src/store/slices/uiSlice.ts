@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction, UnknownAction } from '@reduxjs/toolkit'
+import type {PayloadAction} from '@reduxjs/toolkit'
+import {createSlice} from '@reduxjs/toolkit'
 
-interface UIState {
+export interface UIState {
     sidebarOpen: boolean
     theme: 'light' | 'dark'
     loading: boolean
@@ -32,7 +32,6 @@ const uiSlice = createSlice({
     },
 })
 
-export const { toggleSidebar, setSidebarOpen, setTheme, setLoading } = uiSlice.actions
+export const {toggleSidebar, setSidebarOpen, setTheme, setLoading} = uiSlice.actions
 
-// Export the reducer with proper typing
-export default uiSlice.reducer as (state: UIState | undefined, action: UnknownAction) => UIState
+export default uiSlice.reducer
