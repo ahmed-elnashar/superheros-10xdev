@@ -3,6 +3,7 @@ import { useAppSelector } from './store'
 import { lightTheme, darkTheme } from './styles/theme'
 import MainLayout from './layouts/MainLayout'
 import './App.css'
+import HomePage from "./pages/HomePage.tsx";
 
 function App() {
     const { theme } = useAppSelector((state) => state.ui)
@@ -10,17 +11,7 @@ function App() {
     return (
         <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
             <MainLayout>
-                <div>
-                    <h1>Welcome to your React Template!</h1>
-                    <p>This template includes:</p>
-                    <ul>
-                        <li>✅ Redux Toolkit for state management</li>
-                        <li>✅ Material-UI for components</li>
-                        <li>✅ Responsive sidebar layout</li>
-                        <li>✅ Dark/Light theme toggle</li>
-                        <li>✅ TypeScript support</li>
-                    </ul>
-                </div>
+                <HomePage />
             </MainLayout>
         </ThemeProvider>
     )
