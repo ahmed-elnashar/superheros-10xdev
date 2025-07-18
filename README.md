@@ -4,6 +4,10 @@ A modern React TypeScript application for exploring and managing your favorite s
 Redux Toolkit, this app provides a comprehensive interface to browse, filter, and save your favorite heroes from the
 Superhero API.
 
+## 🌐 Live Demo
+
+Check out the live application: **[https://superheros-10xdev.vercel.app/](https://superheros-10xdev.vercel.app/)**
+
 ## 🚀 Features
 
 - **Browse Heroes**: Explore hundreds of superheroes with detailed information
